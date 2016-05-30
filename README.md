@@ -19,6 +19,12 @@ Run the following command to install python requirements:
     $ pip install -r requirements.txt
 ```
 
+To run it locally and test, just type:
+```
+    $ python shamrock/kernel.py
+```
+
+
 After installing python requirements, compile the application by running:
 ```
     $ python setup.py py2exe
