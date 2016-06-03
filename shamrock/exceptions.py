@@ -1,0 +1,2 @@
+class ExistingCombinationException(Exception):
+    pass
