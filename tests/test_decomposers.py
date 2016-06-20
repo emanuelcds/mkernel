@@ -1,5 +1,6 @@
 from unittest import TestCase
 from mock import MagicMock
+from mock import call
 
 from shamrock.decomposers import SlotPrizeDecomposer
 
@@ -37,7 +38,8 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertIn("prizes", prize)
         self.assertIn("exceeded", prize)
         self.assertEqual(len(prize.get("prizes")), 1)
-        self.assertListEqual(prize.get("prizes")[0]["pattern"], self.prizes.get(multiplier))
+        self.assertListEqual(prize.get("prizes")[0]["pattern"],
+                             self.prizes.get(multiplier))
         self.assertEqual(prize.get("prizes")[0]["won"], multiplier * bet)
         self.assertEqual(prize.get("exceeded"), 0)
 
@@ -66,7 +68,6 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertEqual(len(prize.get("prizes")), 0)
         self.assertEqual(prize.get("exceeded"), multiplier)
 
-
     def test_decompose_multiple_prizes(self):
         """
         If there is a rest that can't be paid on paytable,
@@ -92,9 +93,24 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertEqual(len(prize.get("prizes")), 0)
         self.assertEqual(prize.get("exceeded"), multiplier)
 
-
     def test_decompose_exceeded_multiplier(self):
         """
         Should output exceeded value
         """
-        pass
+        # create a mock paytable
+        ptable = MagicMock()
+        ptable.get_prize.side_effect = lambda arg: self.prizes.get(arg, None)
+        ptable.get_prizes_values.return_value = self.prizes.keys()
+        # define bet, won and expected exceeded value
+        bet, multiplier = (200, 2.5)
+        expected = 0.75
+        # create decompose
+        decomposer = SlotPrizeDecomposer(ptable)
+        prize = decomposer.decompose(bet, multiplier)
+        self.assertTrue(ptable.get_prizes_values.called)
+        prize_calls = [call(1), call(0.5), call(0.25)]
+        ptable.get_prize.assert_has_calls(prize_calls)
+        self.assertIn("prizes", prize)
+        self.assertIn("exceeded", prize)
+        self.assertEqual(len(prize.get("prizes")), 3)
+        self.assertEqual(prize.get("exceeded"), expected)
