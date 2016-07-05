@@ -32,7 +32,7 @@ class SlotPrizeDecomposer(object):
             if value <= multiplier:
                 # create a prize to be associated to a line
                 prize = {
-                    "pattern": self.paytable.get_prize(value),
+                    "pattern": self.paytable.get_prize(value).get("pattern"),
                     "won": value * bet
                 }
                 # append prize to list
