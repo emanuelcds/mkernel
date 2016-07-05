@@ -1,6 +1,3 @@
-from shamrock.exceptions import ExistingCombinationException
-
-
 class SlotPayTable(object):
     """
     Implements slot machine paytable logic suport.
@@ -9,33 +6,13 @@ class SlotPayTable(object):
     def __init__(self):
         self.prizes = []
 
-    def add_prize(self, pattern, multiplier, priority=0):
-        """
-        Adds new prize to the paytable.
-        This prize will pay the amount specified in 'multiplier'.
-        It will override any prize in the same line with lower
-        priority.
-        e.g:
-            >>> add_prize(['A', 'A'], 0.25, 0)
-            >>> add_prize(['A', 'A', 'A'], 0.5, 1) # has higher priority
-        """
-        # checks if prize already exists
-        for prize in self.prizes:
-            if prize["pattern"] == pattern:
-                raise ExistingCombinationException("Pattern already exists!")
-        self.prizes.append({
-            "pattern": pattern,
-            "multiplier": multiplier,
-            "priority": priority
-        })
-        self.prizes.sort(key=lambda x: x["priority"], reverse=True)
-
     def get_prizes_values(self):
         """
         Returns a list of possible prizes from the given paytable.
         """
         for prize in self.prizes:
-            yield prize["multiplier"]
+            if prize.get("multiplier", False):
+                yield prize["multiplier"]
 
     def get_prize(self, value):
         """
@@ -44,5 +21,31 @@ class SlotPayTable(object):
         with highest priority is returned.
         """
         for prize in self.prizes:
-            if prize["multiplier"] == value:
+            if prize.get("multiplier", "") == value:
                 return prize
+        return None
+
+    def get_bonus(self, value):
+        """
+        Gets valid prize pattern for bonus.
+        """
+        for prize in self.prizes:
+            if prize.get("bonus", False):
+                return self.prize
+        return None
+
+    def get_freespins(self, amount):
+        """
+        Gets a valid freespin pattern for the given spins amount.
+        """
+        for prize in self.prizes:
+            if prize.get("freespins", 0) >= amount:
+                return self.prize
+        return None
+
+    def from_dict(self, prizes):
+        """
+        Loads paytable from dictionary.
+        """
+        self.prizes = prizes
+        self.prizes.sort(key=lambda x: x.get("multiplier", 0), reverse=True)
