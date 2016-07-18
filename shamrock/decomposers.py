@@ -1,6 +1,7 @@
 from shamrock.exceptions import InvalidBetException
 from random import randint
 from random import choice
+from random import shuffle
 
 
 class SlotPrizeDecomposer(object):
@@ -15,6 +16,53 @@ class SlotPrizeDecomposer(object):
         @param paytable Paytable class instance.
         """
         self.paytable = paytable
+
+    def handle(self, bet, multiplier, lines, force_freespin=False):
+        """
+        Decomposes the prize acoordingly to game
+        settings and limitations
+        """
+        # initialize values
+        self.bonus = []
+        self.freespins = []
+        self.prizes = []
+
+        # get amount of prizes for the given multiplier
+        decomposed = self.decompose(bet, multiplier)
+        self.prizes = decomposed["prizes"]
+        prize_amount = len(decomposed["prizes"])
+        # maximum paylines to be a base game prize
+        max_paylines = len(lines) // 5
+
+        # bonus flag
+        bonus = False
+
+        # triggers bonus in case of unforeseen outcome
+        if decomposed["exceeded"] > 0:
+            bonus = True
+        # tries to trigger freespins if has many prizes
+        elif prize_amount > max_paylines or force_freespin:
+            feature = choice(["freespin", "bonus"])
+            if feature == "freespin" or force_freespin:
+                spin_amount = self.paytable.get_freespins(prize_amount)
+                # if cannot handle prize amount with freespins, triggers bonus
+                if not spin_amount:
+                    bonus = True
+                else:
+                    # triggers freespins
+                    self.freespin_prize(decomposed["prizes"])
+            # triggers bonus
+            else:
+                bonus = True
+
+        if bonus:
+            self.bonus_prize(multiplier * bet)
+
+        return {
+            "prizes": self.prizes,
+            "freespins": self.freespins,
+            "bonus": self.bonus
+        }
 
     def decompose(self, bet, multiplier):
         # validate bet level
@@ -44,45 +92,42 @@ class SlotPrizeDecomposer(object):
             "exceeded": multiplier * bet
         }
 
-    def decompose_bonus(self, value):
+    def bonus_prize(self, value):
         """
         Decomposes a given value into steps of prizes.
         """
+        bonus = self.paytable.get_bonus()
+        if not bonus:
+            raise Exception("Cannot handle bonus prizes!")
         parts = []
         total = 100
         while total > 0:
-            rnd = randint(0, max(25, total))
+            rnd = randint(0, min(25, total))
             total -= rnd
-            parts.append(rnd)
+            parts.append(rnd / 100)
         prizes = []
         for i in parts:
             prizes.append(value * i)
-        return prizes
+        self.bonus = prizes
+        self.prizes = [bonus]
 
-    def decompose_spins(self, spins, bet, multiplier):
+    def freespin_prize(self, prizes):
         """
         Decomposes a given value into series of prizes for spins.
         """
-        # get possible range of prize values
-        values = list(self.paytable.get_prizes_values())
-        prize_list = []
-
-        # iterates over values picking one by one until multiplier get depleted
-        while multiplier > 0:
-            value = choice(values)
-            multiplier -= value
-            prize_list.append(value)
-
-        # iterates over prize_list until it get reduced to the amount of spins
-        while len(prize_list) > spins:
-            pick_a = choice(prize_list)
-            prize_list.remove(pick_a)
-            pick_b = choice(prize_list)
-            prize_list.remove(pick_b)
-            prize_list.append(pick_a + pick_b)
+        # determine amount of spins
+        freespin = self.paytable.get_freespins(len(prizes))
+        if not freespin:
+            raise Exception("Cannot handle this amount of spins!")
+        # in case of prizes does not match the amount of freespins
+        while len(prizes) < freespin["freespins"]:
+            empty_prize = {
+                "pattern": [],
+                "won": 0
+            }
+            prizes.append(empty_prize)
 
         # get the decomposed prize list for each element
-        prizes = []
-        for prize_value in prize_list:
-            prizes.append(self.decompose(bet, prize_value).get("prizes"))
-        return prizes
+        shuffle(prizes)
+        self.freespins = prizes
+        self.prizes = [freespin]

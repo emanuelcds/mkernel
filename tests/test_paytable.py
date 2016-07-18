@@ -1,6 +1,5 @@
 from unittest import TestCase
 from shamrock.paytable import SlotPayTable
-from shamrock.exceptions import ExistingCombinationException
 
 
 class SlotPayTableTest(TestCase):
@@ -11,53 +10,23 @@ class SlotPayTableTest(TestCase):
         super(SlotPayTableTest, self).setUp()
         self.paytable = SlotPayTable()
         self.prizes = [
-            {"pattern": ['A', 'A'], "multiplier": 0.15, "priority": 0},
-            {"pattern": ['A', 'A', 'A'], "multiplier": 1.0, "priority": 1}
+            {"pattern": ['A', 'A'], "multiplier": 0.15},
+            {"pattern": ['A', 'A', 'A'], "multiplier": 1.0}
         ]
+        self.paytable.from_dict(self.prizes)
 
-    def add_prizes_helper(self):
+    def test_from_dict(self):
         """
-        Helper method to add all declared prizes in
-        :ref:self.prizes attribute.
+        Should load all prizes and sort by multiplier value.
         """
-        for prize in self.prizes:
-            self.paytable.add_prize(
-                prize['pattern'],
-                prize['multiplier'],
-                prize['priority']
-            )
-
-    def test_add_prize(self):
-        """
-        Should store the given symbol pattern and the multiplier
-        on its internal list.
-        """
-        self.add_prizes_helper()
-        self.assertEqual(len(self.paytable.prizes), 2)
-
-        for prize in self.paytable.prizes:
-            self.assertIn("pattern", prize.keys())
-            self.assertIn("multiplier", prize.keys())
-            self.assertIn("priority", prize.keys())
-
-    def test_add_existing_prize(self):
-        """
-        Should raise an ExistingCombinationException exception.
-        """
-        prize = self.prizes[0]
-        with self.assertRaises(ExistingCombinationException):
-            for i in range(2):
-                self.paytable.add_prize(
-                    prize['pattern'],
-                    prize['multiplier'],
-                    prize['priority']
-                )
+        self.paytable.from_dict(self.prizes)
+        self.assertEqual(self.paytable.prizes[0].get("multiplier"), 1.00)
+        self.assertEqual(self.paytable.prizes[1].get("multiplier"), 0.15)
 
     def test_get_prizes_values(self):
         """
         Should return all possible prize values.
         """
-        self.add_prizes_helper()
         values = list(self.paytable.get_prizes_values())
         assertion_values = [v["multiplier"] for v in self.prizes]
         self.assertEqual(len(values), len(self.prizes))
@@ -72,17 +41,13 @@ class SlotPayTableTest(TestCase):
         higher priority will be returned.
         """
         # test a simple prize
-        self.paytable.add_prize(['A'], 0.1, 0)
-        prize = self.paytable.get_prize(0.1)
-        self.assertEqual(prize['pattern'], ['A'])
-        self.assertEqual(prize['priority'], 0)
+        prize = self.paytable.get_prize(0.15)
+        self.assertEqual(prize['pattern'], ['A', 'A'])
 
         # test the call with a higher priority pattern
         # registered with same multiplier
-        self.paytable.add_prize(['A', 'A'], 0.1, 1)
-        prize = self.paytable.get_prize(0.1)
-        self.assertEqual(prize['pattern'], ['A', 'A'])
-        self.assertEqual(prize['priority'], 1)
+        prize = self.paytable.get_prize(1.00)
+        self.assertEqual(prize['pattern'], ['A', 'A', 'A'])
 
         # test the call with invalid multiplier
         prize = self.paytable.get_prize(200)

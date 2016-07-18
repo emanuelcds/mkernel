@@ -6,6 +6,8 @@ from unittest import mock
 
 from shamrock.paytable import SlotPayTable
 from shamrock.decomposers import SlotPrizeDecomposer
+from shamrock.prizes import SlotPrize
+from shamrock.exceptions import MaxWildException
 
 
 class SlotRuntime(object):
@@ -59,8 +61,9 @@ class SlotRuntime(object):
         name = game_settings.get("name", False)
         pool = game_settings.get("pool", False)
         lines = game_settings.get("lines", False)
+        symbols = game_settings.get("symbols", False)
         paytable = game_settings.get("paytable", False)
-        if not code or not name or not pool or not lines or not paytable:
+        if not (code and name and pool and lines and symbols and paytable):
             raise Exception("Game Error: Required fields are {}".format(
                 "code, name, pool, lines and paytable."
             ))
@@ -73,7 +76,8 @@ class SlotRuntime(object):
             "pool": pool,
             "lines": lines,
             "paytable": ptable,
-            "decomposer": decomposer
+            "decomposer": decomposer,
+            "symbols": symbols,
         }
 
     def handle(self, code, bet):
@@ -81,8 +85,23 @@ class SlotRuntime(object):
             return False
         game = self.games[code]
         decomposer = game["decomposer"]
+        paylines = game["lines"]
+        symbols = game["symbols"]
+        credits = self.backend.get_credits()
         multiplier = self.backend.play(bet, game.get("pool"))
-        return decomposer.decompose(bet, multiplier)
+        credits_after = self.backend.get_credits()
+
+        # try to decompose the prize
+        decomposed = decomposer.handle(bet, multiplier, paylines)
+        try:
+            result = SlotPrize(paylines, symbols, decomposed)
+        except MaxWildException:
+            decomposed = decomposer.handle(bet, multiplier, paylines, True)
+            result = SlotPrize(paylines, symbols, decomposed)
+        out = result.serialize()
+        out["credits_before"] = credits
+        out["credits_after"] = credits_after
+        return out
 
 
 class SweepstakesBackend(object):
@@ -95,15 +114,18 @@ class SweepstakesBackend(object):
         self.credits = 0
         self.backend = mock.MagicMock()
         self.prizes = [
-            1000, 1250, 15, 35, 75, 0, 0, 0,
+            1000, 15, 35, 75, 0, 0, 0, 3175,
             25, 85, 725, 0, 0, 0, 25, 20, 10,
-            5, 15, 20, 25, 30, 35, 40, 45, 50,
+            5, 15, 20, 25, 30, 40, 45, 50,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ]
         self.backend.play.side_effect = lambda: random.choice(self.prizes)
 
     def set_credits(self, credits):
         self.credits = credits
+
+    def get_credits(self):
+        return self.credits
 
     def play(self, bet, pool):
         self.credits -= bet

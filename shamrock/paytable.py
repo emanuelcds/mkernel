@@ -25,13 +25,13 @@ class SlotPayTable(object):
                 return prize
         return None
 
-    def get_bonus(self, value):
+    def get_bonus(self):
         """
         Gets valid prize pattern for bonus.
         """
         for prize in self.prizes:
             if prize.get("bonus", False):
-                return self.prize
+                return prize
         return None
 
     def get_freespins(self, amount):
@@ -40,7 +40,7 @@ class SlotPayTable(object):
         """
         for prize in self.prizes:
             if prize.get("freespins", 0) >= amount:
-                return self.prize
+                return prize
         return None
 
     def from_dict(self, prizes):

@@ -36,6 +36,7 @@
                 { "line": 24, "pattern": [0,2,0,2,0] },
                 { "line": 25, "pattern": [2,0,2,0,2] }
             ],
+            "symbols": ["P1", "P2", "P3", "P4", "A", "K", "Q", "J", "10"],
             "paytable": [
                 { "pattern": ["W", "W", "W", "W", "W"], "multiplier": 1000.0 },
                 { "pattern": ["P1", "P1", "P1", "P1", "P1"], "multiplier": 800.0 },
@@ -66,9 +67,9 @@
                 { "pattern": ["10", "10", "10", "10"], "multiplier": 15.0 },
                 { "pattern": ["10", "10", "10"], "multiplier": 5 },
                 { "pattern": ["B", "B", "B"], "bonus": true },
-                { "pattern": ["S", "S", "S"], "freespins": 5, "scatter": true },
-                { "pattern": ["S", "S", "S", "S"], "freespins": 10, "scatter": true },
-                { "pattern": ["S", "S", "S", "S", "S"], "freespins": 15, "scatter": true }
+                { "pattern": ["S", "S", "S"], "freespins": 10, "scatter": true },
+                { "pattern": ["S", "S", "S", "S"], "freespins": 15, "scatter": true },
+                { "pattern": ["S", "S", "S", "S", "S"], "freespins": 20, "scatter": true }
           ]
         }
     ]

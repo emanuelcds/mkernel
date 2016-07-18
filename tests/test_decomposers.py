@@ -10,9 +10,9 @@ class SlotPrizeDecomposerTest(TestCase):
     def setUp(self):
         super(SlotPrizeDecomposerTest, self).setUp()
         self.prizes = {
-            0.25: ['A', 'A'],
-            0.5:  ['A', 'A', 'A'],
-            1:    ['A', 'A', 'A', 'A'],
+                0.25: { "pattern": ['A', 'A'], "multiplier": 0.25 },
+                0.5: { "pattern": ['A', 'A', 'A'], "multiplier": 0.50 },
+                1: { "pattern": ['A', 'A', 'A', 'A'], "multiplier": 1.00 },
         }
 
     def test_decompose_exact_prize(self):
@@ -39,7 +39,7 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertIn("exceeded", prize)
         self.assertEqual(len(prize.get("prizes")), 1)
         self.assertListEqual(prize.get("prizes")[0]["pattern"],
-                             self.prizes.get(multiplier))
+                             self.prizes.get(multiplier).get("pattern"))
         self.assertEqual(prize.get("prizes")[0]["won"], multiplier * bet)
         self.assertEqual(prize.get("exceeded"), 0)
 
@@ -66,7 +66,7 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertIn("prizes", prize)
         self.assertIn("exceeded", prize)
         self.assertEqual(len(prize.get("prizes")), 0)
-        self.assertEqual(prize.get("exceeded"), multiplier)
+        self.assertEqual(prize.get("exceeded"), multiplier * bet)
 
     def test_decompose_multiple_prizes(self):
         """
@@ -91,7 +91,7 @@ class SlotPrizeDecomposerTest(TestCase):
         self.assertIn("prizes", prize)
         self.assertIn("exceeded", prize)
         self.assertEqual(len(prize.get("prizes")), 0)
-        self.assertEqual(prize.get("exceeded"), multiplier)
+        self.assertEqual(prize.get("exceeded"), multiplier * bet)
 
     def test_decompose_exceeded_multiplier(self):
         """
@@ -103,7 +103,7 @@ class SlotPrizeDecomposerTest(TestCase):
         ptable.get_prizes_values.return_value = self.prizes.keys()
         # define bet, won and expected exceeded value
         bet, multiplier = (200, 2.5)
-        expected = 0.75
+        expected = 0.75 * bet
         # create decompose
         decomposer = SlotPrizeDecomposer(ptable)
         prize = decomposer.decompose(bet, multiplier)
