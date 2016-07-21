@@ -18,10 +18,10 @@ Runtime = SlotRuntime(SETTINGS_FILE, ShamrockSweepsBackend)
 @post('/slot/play')
 def slot_play():
     try:
-        body = request.json()
+        body = request.json
     except:
         response.status = 400
-        return "Bad Request"
+        return "Invalid JSON data!"
 
     if "bet" not in body.keys():
         response.status = 400
