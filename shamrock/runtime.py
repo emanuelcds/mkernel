@@ -14,13 +14,13 @@ class SlotRuntime(object):
     """
     Class that runs slot machine games.
     """
-    def __init__(self, config):
+    def __init__(self, config, BackendCls):
         # Sanity Check
         if not os.path.exists(config):
             raise Exception("Invalid file path: {}".format(config))
         with open(config, "r") as fp:
             self.settings = json.load(fp)
-        fields = ['host', 'user', 'port', 'password', 'games']
+        fields = ['host', 'username', 'database', 'password', 'games']
         for field in fields:
             if not self.check_config(field):
                 raise Exception("Field '{}' not declared in settings!".format(
@@ -32,13 +32,11 @@ class SlotRuntime(object):
             "host": self.settings.get("host"),
             "user": self.settings.get("username"),
             "password": self.settings.get("password"),
-            "db": self.settings.get("database"),
-            "port": self.settings.get("port"),
+            "database": self.settings.get("database"),
         }
 
         # Initializing Backend Adapter
-        backend = SweepstakesBackend(**self.database)
-        self.backend = backend
+        self.backend = BackendCls(self.database)
 
         # Game Settings
         self.games = {}
@@ -53,8 +51,6 @@ class SlotRuntime(object):
             raise Exception("Settings not loaded!")
         return bool(self.settings.get(key, False))
 
-    def cash_in(self, amount):
-        self.backend.set_credits(self.backend.credits + amount)
 
     def load_game(self, game_settings):
         code = game_settings.get("code", False)

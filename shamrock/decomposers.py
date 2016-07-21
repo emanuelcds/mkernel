@@ -38,7 +38,7 @@ class SlotPrizeDecomposer(object):
         bonus = False
 
         # triggers bonus in case of unforeseen outcome
-        if decomposed["exceeded"] > 0:
+        if decomposed["exceeded"] > 1:
             bonus = True
         # tries to trigger freespins if has many prizes
         elif prize_amount > max_paylines or force_freespin:
@@ -107,7 +107,7 @@ class SlotPrizeDecomposer(object):
             parts.append(rnd / 100)
         prizes = []
         for i in parts:
-            prizes.append(value * i)
+            prizes.append(float("%.2f" % (value * i)))
         self.bonus = prizes
         self.prizes = [bonus]
 

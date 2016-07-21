@@ -1,23 +1,20 @@
 import os
+import sys
 import time
 from shamrock.runtime import SlotRuntime
+from shamrock.backend import ShamrockSweepsBackend
 
-config = os.path.join(os.path.dirname(__file__), "settings.json")
+config = os.path.join(os.path.dirname(sys.argv[0]), "settings.json")
 
-runtime = SlotRuntime(config)
+runtime = SlotRuntime(config, ShamrockSweepsBackend)
 
-runtime.cash_in(1000)
-while(runtime.backend.credits):
+#runtime.backend.cashin(10000)
+
+while(runtime.backend.get_credits()):
     bet = 1
     prize = runtime.handle("1000", bet)
     print(prize)
-    if len(prize.get("freespins", [])) > 0:
-        print("TOTAL WIN: {}".format(prize.get("total_win")))
-        after = prize.get("credits_after")
-        before = prize.get("credits_before")
-        if prize.get("total_win") != (after - before) + bet:
-            print("After: ", after)
-            print("Before: ", before)
-            print("Result: ", after - before)
-            time.sleep(10)
+    if prize.get("total_win", 0) > 0:
+            print("TOTAL WIN: {}".format(prize.get("total_win")))
+            time.sleep(1)
     print(runtime.backend.get_credits())
