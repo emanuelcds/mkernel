@@ -3,11 +3,10 @@ import sys
 
 from bottle import run
 from bottle import request, response
-from bottle import get, post
+from bottle import get
 
 from shamrock.runtime import SlotRuntime
 from shamrock.backend import ShamrockSweepsBackend
-
 
 
 BASE_DIR = os.path.dirname(sys.argv[0])
@@ -15,25 +14,14 @@ SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
 Runtime = SlotRuntime(SETTINGS_FILE, ShamrockSweepsBackend)
 
-@post('/slot/play')
-def slot_play():
-    try:
-        body = request.json
-    except:
-        response.status = 400
-        return "Invalid JSON data!"
 
-    if "bet" not in body.keys():
-        response.status = 400
-        return "Bad Request - Missing 'bet' attribute."
-    if "game" not in body.keys():
-        response.status = 400
-        return "Bad Request - Missing 'game' attribute."
-
-    result = Runtime.handle(str(body.get("game")), float(body.get("bet")))
+@get('/slot/play/<game>/<bet>')
+def slot_play(game, bet):
+    result = Runtime.handle(str(game), float(bet))
     response.status = 201
     response.headers['Content-Type'] = 'application/json'
     return result
+
 
 @get('/credits')
 def get_credits():
