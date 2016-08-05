@@ -42,7 +42,7 @@ class SlotPrizeDecomposer(object):
             bonus = True
         # tries to trigger freespins if has many prizes
         elif prize_amount > max_paylines or force_freespin:
-            feature = choice(["freespin", "bonus"])
+            feature = choice(["bonus", "bonus"])
             if feature == "freespin" or force_freespin:
                 spin_amount = self.paytable.get_freespins(prize_amount)
                 # if cannot handle prize amount with freespins, triggers bonus
@@ -56,7 +56,7 @@ class SlotPrizeDecomposer(object):
                 bonus = True
 
         if bonus:
-            self.bonus_prize(multiplier * bet)
+            self.bonus_prize(multiplier)
 
         return {
             "prizes": self.prizes,
@@ -77,7 +77,7 @@ class SlotPrizeDecomposer(object):
         prizes = []
         for value in values:
             # if value is contained in multiplier
-            if value <= multiplier:
+            if value * bet <= multiplier:
                 # create a prize to be associated to a line
                 prize = {
                     "pattern": self.paytable.get_prize(value).get("pattern"),
@@ -86,10 +86,10 @@ class SlotPrizeDecomposer(object):
                 # append prize to list
                 prizes.append(prize)
                 # decrement multiplier
-                multiplier -= value
+                multiplier -= value * bet
         return {
             "prizes": prizes,
-            "exceeded": multiplier * bet
+            "exceeded": multiplier
         }
 
     def bonus_prize(self, value):

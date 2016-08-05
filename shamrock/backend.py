@@ -6,6 +6,7 @@ class ShamrockSweepsBackend(object):
         for opt in db_opts:
             if opt not in options.keys():
                 raise Exception("{} not found in db settings!".format(opt))
+        self.options = options
         conn = pymssql.connect(options["host"],
                                options["user"],
                                options["password"],
@@ -26,7 +27,9 @@ class ShamrockSweepsBackend(object):
 
         result = self.cursor.fetchone()
         won = result[0]
+        print("WON: {}".format(float(won)))
 
+        self.conn.commit()
         multiplier = float("%.2f" % (float(won)))
         return multiplier
 
@@ -39,14 +42,8 @@ class ShamrockSweepsBackend(object):
 
         result = self.cursor.fetchone()
         credits = result[0]
+        print("CREDITS: {}".format(credits))
+        self.conn.commit()
 
         return float("%.2f" % (float(credits)))
     
-    def cashin(self, amount):
-        query = """
-        UPDATE device_balance SET current_balance = current_balance + {}
-        """.format(amount)
-
-        self.cursor.execute(query)
-        self.conn.commit()
-
