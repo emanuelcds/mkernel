@@ -51,7 +51,6 @@ class SlotRuntime(object):
             raise Exception("Settings not loaded!")
         return bool(self.settings.get(key, False))
 
-
     def load_game(self, game_settings):
         code = game_settings.get("code", False)
         name = game_settings.get("name", False)
@@ -107,7 +106,7 @@ class SweepstakesBackend(object):
 
     def __init__(self, host=None, user=None, password=None,
                  db=None, port=None):
-        self.credits = 0
+        self.credits = 2000
         self.backend = mock.MagicMock()
         self.prizes = [
             1000, 15, 35, 75, 0, 0, 0, 3175,

@@ -1,4 +1,5 @@
 from shamrock.exceptions import InvalidBetException
+from decimal import Decimal
 from random import randint
 from random import choice
 from random import shuffle
@@ -99,17 +100,25 @@ class SlotPrizeDecomposer(object):
         bonus = self.paytable.get_bonus()
         if not bonus:
             raise Exception("Cannot handle bonus prizes!")
-        parts = []
-        total = 100
-        while total > 0:
-            rnd = randint(0, min(25, total))
-            total -= rnd
-            parts.append(rnd / 100)
-        prizes = []
-        for i in parts:
-            prizes.append(float("%.2f" % (value * i)))
-        self.bonus = prizes
         self.prizes = [bonus]
+
+        amount = Decimal(value)
+        max_parts = randint(3, 15)
+        part_value = amount // max_parts
+        parts = []
+
+        while(amount != 0):
+            if amount < part_value:
+                parts[0] += float("{0:.2f}".format(amount))
+                amount = 0
+            else:
+                fraction = randint(1, max_parts) if max_parts > 1 else 1
+                max_parts -= fraction
+                part = part_value * fraction
+                amount -= part
+                parts.append(float("{0:.2f}".format(part)))
+
+        self.bonus = parts
 
     def freespin_prize(self, prizes):
         """

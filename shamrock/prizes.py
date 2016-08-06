@@ -125,29 +125,30 @@ class SlotPrize(object):
             lines = []
             paylines = self.paylines[:]
             total_win = 0
-            payline = random.choice(paylines)
-            paylines.remove(payline)
-            # iterates over pattern and fill reelstops with the
-            # given payline
-            for idx, symbol in enumerate(prize["pattern"]):
-                reel_pos = payline["pattern"][idx]
-                # if reel position already filled, assign wild,
-                # otherwise, fill in the prize symbol
-                if reelstops[idx][reel_pos]:
-                    reelstops[idx][reel_pos] = "W"
-                else:
-                    reelstops[idx][reel_pos] = symbol
-            # generates line
-            line = {
-                # normalizing pattern indexes for -1 0 1 notation
-                "indexes": [x - 1 for x in payline["pattern"]],
-                "line": payline["line"],
-                "matches": len(prize["pattern"]),
-                "win": prize["won"]
-            }
-            lines.append(line)
-            total_win += prize["won"]
-            self.total_win += total_win
+            if prize["won"]:
+                payline = random.choice(paylines)
+                paylines.remove(payline)
+                # iterates over pattern and fill reelstops with the
+                # given payline
+                for idx, symbol in enumerate(prize["pattern"]):
+                    reel_pos = payline["pattern"][idx]
+                    # if reel position already filled, assign wild,
+                    # otherwise, fill in the prize symbol
+                    if reelstops[idx][reel_pos]:
+                        reelstops[idx][reel_pos] = "W"
+                    else:
+                        reelstops[idx][reel_pos] = symbol
+                # generates line
+                line = {
+                    # normalizing pattern indexes for -1 0 1 notation
+                    "indexes": [x - 1 for x in payline["pattern"]],
+                    "line": payline["line"],
+                    "matches": len(prize["pattern"]),
+                    "win": prize["won"]
+                }
+                lines.append(line)
+                total_win += prize["won"]
+                self.total_win += total_win
             self.fill(reelstops, list(self.symbols))
             self.freespins.append({
                 "total_win": float("%.2f" % (total_win)),
