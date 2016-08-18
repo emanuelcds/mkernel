@@ -1,4 +1,5 @@
 import pymssql
+from decimal import Decimal
 
 
 class ShamrockSweepsBackend(object):
@@ -50,7 +51,7 @@ class ShamrockSweepsBackend(object):
         self.cursor.execute(query)
 
         result = self.cursor.fetchone()
-        prize = result[0]
+        prize = result[1] * Decimal(amount)
 
         self.conn.commit()
         normalized = float("%.2f" % (float(prize)))
