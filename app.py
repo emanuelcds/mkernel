@@ -23,6 +23,14 @@ def slot_play(game, bet):
     return result
 
 
+@get('/slot/view/<game>/<bet>')
+def slot_view_prize(game, bet):
+    result = Runtime.pre_review(str(game), float(bet))
+    response.status = 201
+    response.headers['Content-Type'] = 'application/json'
+    return result
+
+
 @get('/credits')
 def get_credits():
     credits = Runtime.backend.get_credits()

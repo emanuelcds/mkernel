@@ -1,8 +1,5 @@
 import os
 import json
-import random
-
-from unittest import mock
 
 from shamrock.paytable import SlotPayTable
 from shamrock.decomposers import SlotPrizeDecomposer
@@ -51,7 +48,6 @@ class SlotRuntime(object):
             raise Exception("Settings not loaded!")
         return bool(self.settings.get(key, False))
 
-
     def load_game(self, game_settings):
         code = game_settings.get("code", False)
         name = game_settings.get("name", False)
@@ -99,32 +95,11 @@ class SlotRuntime(object):
         out["credits_after"] = credits_after
         return out
 
-
-class SweepstakesBackend(object):
-    """
-    Connection to database pool.
-    """
-
-    def __init__(self, host=None, user=None, password=None,
-                 db=None, port=None):
-        self.credits = 0
-        self.backend = mock.MagicMock()
-        self.prizes = [
-            1000, 15, 35, 75, 0, 0, 0, 3175,
-            25, 85, 725, 0, 0, 0, 25, 20, 10,
-            5, 15, 20, 25, 30, 40, 45, 50,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        ]
-        self.backend.play.side_effect = lambda: random.choice(self.prizes)
-
-    def set_credits(self, credits):
-        self.credits = credits
-
-    def get_credits(self):
-        return self.credits
-
-    def play(self, bet, pool):
-        self.credits -= bet
-        value = self.backend.play()
-        self.credits += value * bet
-        return value
+    def pre_review(self, code, bet):
+        out = {}
+        if code not in self.games.keys():
+            out["error"] = "Invalid game."
+        else:
+            game = self.games[code]
+            out["prize"] = self.backend.pre_reveal(bet, game.get("pool"))
+        return out

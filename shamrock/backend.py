@@ -1,5 +1,6 @@
 import pymssql
 
+
 class ShamrockSweepsBackend(object):
     def __init__(self, options):
         db_opts = ['user', 'password', 'database', 'host']
@@ -33,6 +34,28 @@ class ShamrockSweepsBackend(object):
         multiplier = float("%.2f" % (float(won)))
         return multiplier
 
+    def pre_reveal(self, amount, game):
+        query = """
+        DECLARE @return_value int
+
+        EXEC @return_value = [dbo].[preview_next_prize]
+        @gameName = '{}',
+        @playAmount = {},
+        @offset = 0,
+        @numberOfPrizesToRetrieve = 1
+
+        SELECT 'Return Value' = @return_value
+        """.format(game, amount)
+
+        self.cursor.execute(query)
+
+        result = self.cursor.fetchone()
+        prize = result[0]
+
+        self.conn.commit()
+        normalized = float("%.2f" % (float(prize)))
+        return normalized
+
     def get_credits(self):
         query = """
         SELECT current_balance FROM device_balance
@@ -46,4 +69,3 @@ class ShamrockSweepsBackend(object):
         self.conn.commit()
 
         return float("%.2f" % (float(credits)))
-    
