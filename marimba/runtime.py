@@ -1,10 +1,10 @@
 import os
 import json
 
-from shamrock.paytable import SlotPayTable
-from shamrock.decomposers import SlotPrizeDecomposer
-from shamrock.prizes import SlotPrize
-from shamrock.exceptions import MaxWildException
+from marimba.paytable import SlotPayTable
+from marimba.decomposers import SlotPrizeDecomposer
+from marimba.prizes import SlotPrize
+from marimba.exceptions import MaxWildException
 
 
 class SlotRuntime(object):

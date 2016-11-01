@@ -1,5 +1,5 @@
 import random
-from shamrock.exceptions import MaxWildException
+from marimba.exceptions import MaxWildException
 
 
 class SlotPrize(object):

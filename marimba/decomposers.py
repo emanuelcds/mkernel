@@ -1,4 +1,5 @@
-from shamrock.exceptions import InvalidBetException
+from marimba.exceptions import InvalidBetException
+from decimal import Decimal
 from random import randint
 from random import choice
 from random import shuffle
@@ -86,7 +87,7 @@ class SlotPrizeDecomposer(object):
                 # append prize to list
                 prizes.append(prize)
                 # decrement multiplier
-                multiplier -= value * bet
+                multiplier -= Decimal(value) * Decimal(bet)
         return {
             "prizes": prizes,
             "exceeded": multiplier

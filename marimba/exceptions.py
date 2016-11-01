@@ -5,5 +5,6 @@ class ExistingCombinationException(Exception):
 class InvalidBetException(Exception):
     pass
 
+
 class MaxWildException(Exception):
     pass
