@@ -1,16 +1,16 @@
 import os
-import sys
 import simplejson as json
 
 from bottle import run
 from bottle import request, response
 from bottle import get
+from bottle import default_app
 
 from marimba.runtime import SlotRuntime
 from marimba.backend import MarimbaVLTBackend
 
 
-BASE_DIR = os.path.dirname(sys.argv[0])
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
 Runtime = SlotRuntime(SETTINGS_FILE, MarimbaVLTBackend)
@@ -42,5 +42,9 @@ def get_credits():
     response.headers['Content-Type'] = 'application/json'
     return json.dumps(result)
 
+app = default_app()
 
-run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
+if __name__ == "__main__":
+    run(host='0.0.0.0',
+        port=int(os.getenv('PORT', 5000)),
+        server="guncorn")
