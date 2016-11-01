@@ -13,7 +13,7 @@ while credits > 0:
     # play
     bet = 0.25
     r = requests.get(
-        "https://mykernel.herokuapp.com/slot/play/1000/{}".format(
+        "https://mkernel.herokuapp.com/slot/play/1000/{}".format(
             bet
             )
         )
