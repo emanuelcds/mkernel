@@ -1,7 +1,7 @@
 import requests
 import time
 
-req = requests.get("http://localhost:5000/credits")
+req = requests.get("https://mkernel.herokuapp.com/credits")
 
 if req.status_code != requests.codes.ok:
     print("Error({}): {}".format(req.status_code, req.content))
@@ -12,7 +12,11 @@ print(credits)
 while credits > 0:
     # play
     bet = 0.25
-    r = requests.get("http://localhost:5000/slot/play/1000/{}".format(bet))
+    r = requests.get(
+        "https://mykernel.herokuapp.com/slot/play/1000/{}".format(
+            bet
+            )
+        )
     if r.status_code != requests.codes.created:
         raise Exception("Error({}): {}".format(r.status_code, r.content))
     outcome = r.json()

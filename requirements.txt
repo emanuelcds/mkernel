@@ -1,4 +1,4 @@
 bottle==0.12.10
-Django==1.10.2
+gunicorn==19.6.0
 requests==2.11.1
 simplejson==3.10.0
