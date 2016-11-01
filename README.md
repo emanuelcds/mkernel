@@ -1,18 +1,16 @@
-# Shamrock VLT Kernel
+# Marimba Kernel
 
-This is a simple python subprocess that receive UDP requests on a given configured
-port and replies with local database prize pool results.
+Gaming server that translates finite pool values to slot machine prizes.
 
 ## Configuring
 
-Just declares the SHAMROCK_KERNEL_PORT environment variable before running it.
+Just declares the PORT environment variable before running it.
 
 ## Development
 
 You need the following software installed.
 - Python 3.4+
 - Python PIP
-- [Py2EXE](https://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/)
 
 Run the following command to install python requirements:
 ```
@@ -21,15 +19,13 @@ Run the following command to install python requirements:
 
 To run it locally and test, just type:
 ```
-    $ python shamrock/kernel.py
+    $ python kernel.py
 ```
 
 
 After installing python requirements, compile the application by running:
 ```
-    $ python setup.py py2exe
+    $ python setup.py build
 ```
-
-It will create a folder named **dist** with the **shamrock-kernel.exe** binary inside.
 
 Enjoy!
