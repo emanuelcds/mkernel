@@ -15,7 +15,7 @@ from marimba.backend import MarimbaVLTBackend
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
-getcontext().prec = 2
+getcontext().prec = 4
 
 Runtime = SlotRuntime(SETTINGS_FILE, MarimbaVLTBackend)
 
