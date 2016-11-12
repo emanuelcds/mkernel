@@ -1,4 +1,5 @@
 import random
+from decimal import Decimal
 from marimba.exceptions import MaxWildException
 
 
@@ -151,7 +152,7 @@ class SlotPrize(object):
             self.total_win += total_win
             self.fill(reelstops, list(self.symbols))
             self.freespins.append({
-                "total_win": float("%.2f" % (total_win)),
+                "total_win": Decimal("%.2f" % (total_win)),
                 "reelstops": reelstops,
                 "paylines": lines,
             })
@@ -175,7 +176,7 @@ class SlotPrize(object):
         self.fill(self.reelstops, self.symbols)
         # return serialized prize
         return {
-            "total_win": float("%.2f" % self.total_win),
+            "total_win": Decimal("%.2f" % self.total_win),
             "reelstops": self.reelstops,
             "paylines": self.lines,
             "freespins": self.freespins,

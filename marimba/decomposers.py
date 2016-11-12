@@ -69,6 +69,8 @@ class SlotPrizeDecomposer(object):
         # validate bet level
         if not bet or bet < 0:
             raise InvalidBetException("Invalid Bet: {}".format(bet))
+        bet = Decimal(bet)
+        multiplier = Decimal(multiplier)
 
         # get list of possible outcome prizes
         values = list(self.paytable.get_prizes_values())
@@ -77,6 +79,7 @@ class SlotPrizeDecomposer(object):
         # iterate over prizes until multiplier is depleted
         prizes = []
         for value in values:
+            value = Decimal(value)
             # if value is contained in multiplier
             if value * bet <= multiplier:
                 # create a prize to be associated to a line
@@ -105,10 +108,10 @@ class SlotPrizeDecomposer(object):
         while total > 0:
             rnd = randint(0, min(25, total))
             total -= rnd
-            parts.append(rnd / 100)
+            parts.append(Decimal(rnd) / 100)
         prizes = []
         for i in parts:
-            prizes.append(float("%.2f" % (value * i)))
+            prizes.append(Decimal("%.2f" % (value * i)))
         self.bonus = prizes
         self.prizes = [bonus]
 

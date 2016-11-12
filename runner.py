@@ -1,7 +1,9 @@
 import requests
-import time
+from decimal import Decimal, getcontext
 
-req = requests.get("https://mkernel.herokuapp.com/credits")
+getcontext().prec = 2
+
+req = requests.get("http://localhost:5000/credits")
 
 if req.status_code != requests.codes.ok:
     print("Error({}): {}".format(req.status_code, req.content))
@@ -11,9 +13,9 @@ print(credits)
 
 while credits > 0:
     # play
-    bet = 0.25
+    bet = Decimal(0.25)
     r = requests.get(
-        "https://mkernel.herokuapp.com/slot/play/1000/{}".format(
+        "http://localhost:5000/slot/play/1000/{}".format(
             bet
             )
         )
@@ -23,23 +25,21 @@ while credits > 0:
     print(outcome)
     print(outcome.get("credits_before"))
     print(outcome.get("credits_after"))
-    before = outcome.get("credits_before")
-    credits = outcome.get("credits_after")
+    before = Decimal(outcome.get("credits_before"))
+    credits = Decimal(outcome.get("credits_after"))
     bonus = outcome.get("bonus", [])
     freespins = outcome.get("freespins", [])
-    payout = outcome.get("total_win")
+    payout = Decimal(outcome.get("total_win"))
 
     if len(freespins) > 0:
         for spin in freespins:
             print(spin.get("total_win"))
-        time.sleep(60)
 
     if len(bonus) > 0:
-        total_bonus = sum(bonus)
+        total_bonus = Decimal(sum(bonus))
         print("BONUS: {0:.2f}".format(total_bonus))
-        time.sleep(60)
 
-    expected = float("{0:.2f}".format(before - bet + payout))
+    expected = Decimal(before - bet + payout)
 
     if credits != expected:
         raise Exception("Invalid credits {}, should be {}".format(
