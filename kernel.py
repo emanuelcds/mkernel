@@ -19,13 +19,22 @@ getcontext().prec = 4
 
 Runtime = SlotRuntime(SETTINGS_FILE, MarimbaVLTBackend)
 
+last_response = {}
+
 
 @get('/slot/play/<game>/<bet>')
 def slot_play(game, bet):
+    global last_response
     result = Runtime.handle(str(game), Decimal(bet))
     response.status = 201
     response.headers['Content-Type'] = 'application/json'
+    last_response = json.dumps(result)
     return json.dumps(result)
+
+
+@get('/slot/last_result/')
+def slot_last_response():
+    return last_response
 
 
 @get('/slot/view/<game>/<bet>')
