@@ -1,7 +1,6 @@
 import os
 import simplejson as json
 from decimal import Decimal
-from decimal import getcontext
 
 from bottle import run
 from bottle import request, response
@@ -15,26 +14,24 @@ from marimba.backend import MarimbaVLTBackend
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
-getcontext().prec = 4
-
 Runtime = SlotRuntime(SETTINGS_FILE, MarimbaVLTBackend)
 
-last_response = {}
+
+def serialize(obj):
+    return json.dumps(obj, use_decimal=True)
 
 
 @get('/slot/play/<game>/<bet>')
 def slot_play(game, bet):
-    global last_response
     result = Runtime.handle(str(game), Decimal(bet))
     response.status = 201
     response.headers['Content-Type'] = 'application/json'
-    last_response = json.dumps(result)
-    return json.dumps(result)
+    return serialize(result)
 
 
 @get('/slot/last_result/')
 def slot_last_response():
-    return last_response
+    return serialize(Runtime.last_result)
 
 
 @get('/slot/view/<game>/<bet>')
@@ -42,7 +39,7 @@ def slot_view_prize(game, bet):
     result = Runtime.pre_review(str(game), Decimal(bet))
     response.status = 201
     response.headers['Content-Type'] = 'application/json'
-    return json.dumps(result)
+    return serialize(result)
 
 
 @get('/credits')
@@ -53,7 +50,7 @@ def get_credits():
     }
     request.status = 200
     response.headers['Content-Type'] = 'application/json'
-    return json.dumps(result)
+    return serialize(result)
 
 app = default_app()
 

@@ -43,6 +43,8 @@ class SlotRuntime(object):
         for game in games:
             self.load_game(game)
 
+        self.last_result = {}
+
     def check_config(self, key):
         if not self.settings:
             raise Exception("Settings not loaded!")
@@ -93,6 +95,7 @@ class SlotRuntime(object):
         out = result.serialize()
         out["credits_before"] = credits
         out["credits_after"] = credits_after
+        self.last_result = out
         return out
 
     def pre_review(self, code, bet):

@@ -42,7 +42,12 @@ while credits > 0:
     expected = Decimal(before - bet + payout)
 
     if credits != expected:
+        print("Before: ", before)
+        print("Bet: ", bet)
+        print("Payout: ", payout)
+        print("Current: ", credits)
+        print("Expected: ", expected)
         raise Exception("Invalid credits {}, should be {}".format(
             credits,
-            (before - bet + payout)
+            Decimal(before - bet + payout)
         ))
