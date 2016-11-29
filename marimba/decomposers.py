@@ -79,13 +79,13 @@ class SlotPrizeDecomposer(object):
         # iterate over prizes until multiplier is depleted
         prizes = []
         for value in values:
-            value = Decimal(value)
+            value = value
             # if value is contained in multiplier
             if value * bet <= multiplier:
                 # create a prize to be associated to a line
                 prize = {
                     "pattern": self.paytable.get_prize(value).get("pattern"),
-                    "won": value * bet
+                    "won": Decimal("{0:.2f}".format(value * bet))
                 }
                 # append prize to list
                 prizes.append(prize)

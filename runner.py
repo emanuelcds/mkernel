@@ -1,7 +1,5 @@
 import requests
-from decimal import Decimal, getcontext
-
-getcontext().prec = 2
+from decimal import Decimal
 
 req = requests.get("http://localhost:5000/credits")
 
@@ -13,24 +11,21 @@ print(credits)
 
 while credits > 0:
     # play
-    bet = Decimal(0.25)
+    bet = Decimal(1)
     r = requests.get(
         "http://localhost:5000/slot/play/1000/{}".format(
             bet
             )
         )
-    if r.status_code != requests.codes.created:
+    if r.status_code != requests.codes.ok:
         raise Exception("Error({}): {}".format(r.status_code, r.content))
     outcome = r.json()
-    print(outcome)
-    print(outcome.get("credits_before"))
-    print(outcome.get("credits_after"))
-    before = Decimal(outcome.get("credits_before"))
-    credits = Decimal(outcome.get("credits_after"))
+    before = Decimal("{0:.2f}".format(outcome.get("credits_before")))
+    credits = Decimal("{0:.2f}".format(outcome.get("credits_after")))
     bonus = outcome.get("bonus", [])
     freespins = outcome.get("freespins", [])
-    payout = Decimal(outcome.get("total_win"))
-
+    payout = Decimal("{0:.2f}".format(outcome.get("total_win")))
+    print(outcome)
     if len(freespins) > 0:
         for spin in freespins:
             print(spin.get("total_win"))
@@ -39,7 +34,7 @@ while credits > 0:
         total_bonus = Decimal(sum(bonus))
         print("BONUS: {0:.2f}".format(total_bonus))
 
-    expected = Decimal(before - bet + payout)
+    expected = Decimal((before - bet) + payout)
 
     if credits != expected:
         print("Before: ", before)

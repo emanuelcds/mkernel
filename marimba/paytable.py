@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+
 class SlotPayTable(object):
     """
     Implements slot machine paytable logic suport.
@@ -12,7 +15,9 @@ class SlotPayTable(object):
         """
         for prize in self.prizes:
             if prize.get("multiplier", False):
-                yield prize["multiplier"]
+                yield Decimal(
+                    "{0:.2f}".format(prize["multiplier"])
+                )
 
     def get_prize(self, value):
         """
@@ -21,8 +26,11 @@ class SlotPayTable(object):
         with highest priority is returned.
         """
         for prize in self.prizes:
-            if prize.get("multiplier", "") == value:
-                return prize
+            prize_value = prize.get("multiplier", None)
+            if prize_value:
+                current_prize = Decimal("{0:.2f}".format(prize_value))
+                if current_prize == value:
+                    return prize
         return None
 
     def get_bonus(self):
