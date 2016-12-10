@@ -1,6 +1,6 @@
 import random
 from decimal import Decimal
-from marimba.exceptions import MaxWildException
+from slot.exceptions import MaxWildException
 
 
 class SlotPrize(object):

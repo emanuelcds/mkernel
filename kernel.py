@@ -7,14 +7,14 @@ from bottle import response
 from bottle import get
 from bottle import default_app
 
-from marimba.runtime import SlotRuntime
-from marimba.backend import MarimbaVLTBackend
+from slot.runtime import SlotRuntime
+from slot.backend import SlotVLTBackend
 
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
+SETTINGS_FILE = os.path.join(BASE_DIR, "slots.json")
 
-Runtime = SlotRuntime(SETTINGS_FILE, MarimbaVLTBackend)
+Runtime = SlotRuntime(SETTINGS_FILE, SlotVLTBackend)
 
 
 def serialize(obj):

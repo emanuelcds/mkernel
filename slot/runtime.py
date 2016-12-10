@@ -1,10 +1,10 @@
 import os
 import json
 
-from marimba.paytable import SlotPayTable
-from marimba.decomposers import SlotPrizeDecomposer
-from marimba.prizes import SlotPrize
-from marimba.exceptions import MaxWildException
+from slot.paytable import SlotPayTable
+from slot.decomposers import SlotPrizeDecomposer
+from slot.prizes import SlotPrize
+from slot.exceptions import MaxWildException
 
 
 class SlotRuntime(object):
@@ -17,23 +17,15 @@ class SlotRuntime(object):
             raise Exception("Invalid file path: {}".format(config))
         with open(config, "r") as fp:
             self.settings = json.load(fp)
-        fields = ['host', 'username', 'database', 'password', 'games']
+        fields = ['games']
         for field in fields:
             if not self.check_config(field):
                 raise Exception("Field '{}' not declared in settings!".format(
                     field
                 ))
 
-        # Database Settings
-        self.database = {
-            "host": self.settings.get("host"),
-            "user": self.settings.get("username"),
-            "password": self.settings.get("password"),
-            "database": self.settings.get("database"),
-        }
-
         # Initializing Backend Adapter
-        self.backend = BackendCls(self.database)
+        self.backend = BackendCls({})
 
         # Game Settings
         self.games = {}
@@ -53,13 +45,12 @@ class SlotRuntime(object):
     def load_game(self, game_settings):
         code = game_settings.get("code", False)
         name = game_settings.get("name", False)
-        pool = game_settings.get("pool", False)
         lines = game_settings.get("lines", False)
         symbols = game_settings.get("symbols", False)
         paytable = game_settings.get("paytable", False)
-        if not (code and name and pool and lines and symbols and paytable):
+        if not (code and name and lines and symbols and paytable):
             raise Exception("Game Error: Required fields are {}".format(
-                "code, name, pool, lines and paytable."
+                "code, name, lines and paytable."
             ))
 
         ptable = SlotPayTable()
@@ -67,7 +58,6 @@ class SlotRuntime(object):
         decomposer = SlotPrizeDecomposer(ptable)
         self.games[code] = {
             "name": name,
-            "pool": pool,
             "lines": lines,
             "paytable": ptable,
             "decomposer": decomposer,
@@ -82,7 +72,7 @@ class SlotRuntime(object):
         paylines = game["lines"]
         symbols = game["symbols"]
         credits = self.backend.get_credits()
-        multiplier = self.backend.play(bet, game.get("pool"))
+        multiplier = self.backend.play(bet, game.get("code"))
         credits_after = self.backend.get_credits()
 
         # try to decompose the prize
@@ -104,5 +94,5 @@ class SlotRuntime(object):
             out["error"] = "Invalid game."
         else:
             game = self.games[code]
-            out["prize"] = self.backend.pre_reveal(bet, game.get("pool"))
+            out["prize"] = self.backend.pre_reveal(bet, game.get("code"))
         return out

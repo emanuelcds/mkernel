@@ -3,7 +3,7 @@ from decimal import Decimal
 from pprint import pprint
 
 
-class MarimbaVLTBackend(object):
+class SlotVLTBackend(object):
     def __init__(self, options):
         """
         Initialize connection with backend database.

@@ -1,4 +1,4 @@
-from marimba.exceptions import InvalidBetException
+from slot.exceptions import InvalidBetException
 from decimal import Decimal
 from random import randint
 from random import choice
