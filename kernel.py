@@ -29,30 +29,43 @@ def build_response(obj):
     return msg
 
 
-@get('/slot/play/<game>/<bet>')
-def slot_play(game, bet):
+@get('/slot/play/<game>/<bet>/<token>')
+def slot_play(game, bet, token):
     result = Runtime.handle(str(game), Decimal(bet))
     return build_response(result)
 
 
-@get('/slot/last_result/')
-def slot_last_response():
+@get('/slot/last_result/<token>')
+def slot_last_response(token):
     return build_response(Runtime.last_result)
 
 
-@get('/slot/view/<game>/<bet>')
-def slot_view_prize(game, bet):
+@get('/slot/reveal/<game>/<bet>/<token>')
+def slot_view_prize(game, bet, token):
     result = Runtime.pre_review(str(game), Decimal(bet))
     return build_response(result)
 
 
-@get('/credits')
-def get_credits():
+@get('/account/<token>')
+def get_credits(token):
     credits = Runtime.backend.get_credits()
     result = {
         "credits": credits
     }
     return build_response(result)
+
+
+@get('/account/login/<pin>')
+def login(pin):
+    return {
+        "token": "0123456789abcdef"
+    }
+
+
+@get('/account/cashout/<token>')
+def cashout(token):
+    return get_credits(token)
+
 
 app = default_app()
 

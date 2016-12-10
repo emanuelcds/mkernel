@@ -1,7 +1,7 @@
 import requests
 from decimal import Decimal
 
-req = requests.get("http://localhost:5000/credits")
+req = requests.get("http://localhost:5000/account/shanvers-token-here")
 
 if req.status_code != requests.codes.ok:
     print("Error({}): {}".format(req.status_code, req.content))
@@ -13,7 +13,7 @@ while credits > 0:
     # play
     bet = Decimal(1)
     r = requests.get(
-        "http://localhost:5000/slot/play/1000/{}".format(
+        "http://localhost:5000/slot/play/1000/{}/token-here".format(
             bet
             )
         )
