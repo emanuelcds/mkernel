@@ -31,7 +31,6 @@ class SlotRuntime(object):
         self.games = {}
 
         games = self.settings.get("games")
-
         for game in games:
             self.load_game(game)
 
@@ -43,7 +42,7 @@ class SlotRuntime(object):
         return bool(self.settings.get(key, False))
 
     def load_game(self, game_settings):
-        code = game_settings.get("code", False)
+        code = int(game_settings.get("code", 0))
         name = game_settings.get("name", False)
         lines = game_settings.get("lines", False)
         symbols = game_settings.get("symbols", False)
@@ -65,6 +64,7 @@ class SlotRuntime(object):
         }
 
     def handle(self, code, bet):
+        code = int(code)
         if code not in self.games.keys():
             return False
         game = self.games[code]

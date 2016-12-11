@@ -1,7 +1,7 @@
 {
     "games": [
         {
-            "code": "1000",
+            "code": 1000,
             "name": "Panda Fu",
             "lines": [
                 { "line": 1, "pattern": [1,1,1,1,1] },
@@ -64,10 +64,10 @@
                 { "pattern": ["S", "S", "S"], "freespins": 10, "scatter": true },
                 { "pattern": ["S", "S", "S", "S"], "freespins": 15, "scatter": true },
                 { "pattern": ["S", "S", "S", "S", "S"], "freespins": 20, "scatter": true }
-          ]
+            ]
         },
         {
-            "code": 1010,
+            "code": "1010",
             "name": "Rubber Duck",
             "lines": [
                 { "line": 1, "pattern": [1,1,1,1,1] },
@@ -130,7 +130,7 @@
                 { "pattern": ["S", "S", "S"], "freespins": 10, "scatter": true },
                 { "pattern": ["S", "S", "S", "S"], "freespins": 15, "scatter": true },
                 { "pattern": ["S", "S", "S", "S", "S"], "freespins": 20, "scatter": true }
-          ]
+            ]
         }
     ]
 }
