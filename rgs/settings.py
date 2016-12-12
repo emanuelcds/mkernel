@@ -15,7 +15,7 @@ from dj_database_url import config as dbconfig
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+SLOT_SETTINGS_FILE = os.path.join(BASE_DIR, "slots.json")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
