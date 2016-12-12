@@ -19,9 +19,9 @@ urlpatterns = [
     url(r'^api/pos/pin/?', include(POSPinResource.urls())),
     url(r'^api/pos/pin/?', include(POSPinResource.urls())),
     # Slot API
-    url(r'^slot/play/(?P<game>\d+)/(?P<bet>\d+)/(?P<token>\d+)',
+    url(r'^slot/play/(?P<game>\d+\.?\d+?)/(?P<bet>\d+\.\d{1,2})/(?P<token>\d+)',
         slot_views.slot_play, name='play'),
-    url(r'^slot/reveal/(?P<game>\d+)/(?P<bet>\d+)/(?P<token>\d+)',
+    url(r'^slot/reveal/(?P<game>\d+)/(?P<bet>\d+\.\d{2})/(?P<token>\d+)',
         slot_views.slot_view_prize, name='view_prize'),
     url(r'^slot/last_result/(?P<token>\d+)',
         slot_views.slot_last_response, name='last_response'),
