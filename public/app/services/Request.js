@@ -2,7 +2,7 @@
     'use strict';
 
     function Request($rootScope, $http, $ionicLoading) {
-        var baseURL = 'http://localhost:5000/api/pos';
+        var baseURL = 'https://mkernel.herokuapp.com/api/pos';
 
         function __getToken() {
             var token = "";
