@@ -5,7 +5,6 @@ from django.views.decorators.http import require_GET
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 from django.conf import settings
-from django.db.transaction import atomic
 
 from slot.runtime import SlotRuntime
 from slot.backend import SlotVLTBackend
@@ -103,4 +102,5 @@ def cashout(req, token):
             })
         session.pin.status = "cashout"
         session.pin.save()
+        session.delete()
     return get_credits(req, token)
