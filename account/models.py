@@ -15,7 +15,8 @@ class BaseModel(models.Model):
 
 class SessionToken(BaseModel):
     value = models.CharField(max_length=32, primary_key=True)
-    user = models.OneToOneField(User, related_name='token')
+    user = models.ForeignKey(User, related_name='token', null=True)
+    pin = models.ForeignKey('account.Pin', null=True)
 
     def save(self, *args, **kwargs):
         token_bits = random.getrandbits(128)

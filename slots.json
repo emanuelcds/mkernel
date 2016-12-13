@@ -3,6 +3,7 @@
         {
             "code": 1000,
             "name": "Panda Fu",
+            "maxBaseLines": 3,
             "lines": [
                 { "line": 1, "pattern": [1,1,1,1,1] },
                 { "line": 2, "pattern": [0,0,0,0,0] },
@@ -69,6 +70,7 @@
         {
             "code": "1010",
             "name": "Rubber Duck",
+            "maxBaseLines": 2,
             "lines": [
                 { "line": 1, "pattern": [1,1,1,1,1] },
                 { "line": 2, "pattern": [0,0,0,0,0] },

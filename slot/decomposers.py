@@ -11,12 +11,13 @@ class SlotPrizeDecomposer(object):
     machine reel prizes.
     """
 
-    def __init__(self, paytable):
+    def __init__(self, paytable, max_lines):
         """
         Initializes slot machine engine.
         @param paytable Paytable class instance.
         """
         self.paytable = paytable
+        self.max_lines = max_lines
 
     def handle(self, bet, multiplier, lines, force_freespin=False):
         """
@@ -33,7 +34,7 @@ class SlotPrizeDecomposer(object):
         self.prizes = decomposed["prizes"]
         prize_amount = len(decomposed["prizes"])
         # maximum paylines to be a base game prize
-        max_paylines = len(lines) // 5
+        max_paylines = self.max_lines
 
         # bonus flag
         bonus = False
@@ -43,7 +44,7 @@ class SlotPrizeDecomposer(object):
             bonus = True
         # tries to trigger freespins if has many prizes
         elif prize_amount > max_paylines or force_freespin:
-            feature = choice(["bonus", "bonus"])
+            feature = choice(["freespin", "bonus"])
             if feature == "freespin" or force_freespin:
                 spin_amount = self.paytable.get_freespins(prize_amount)
                 # if cannot handle prize amount with freespins, triggers bonus

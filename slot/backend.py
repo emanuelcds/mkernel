@@ -1,6 +1,8 @@
 import random
 from decimal import Decimal
-from pprint import pprint
+
+from account.models import SessionToken
+from django.db.transaction import atomic
 
 
 class SlotVLTBackend(object):
@@ -8,8 +10,6 @@ class SlotVLTBackend(object):
         """
         Initialize connection with backend database.
         """
-        self.cache = Decimal(0)
-        self.credits = Decimal(1000)
         self.pool = {
             1000: 77665 * [0.00] +
                 1334 * [0.20] +
@@ -91,29 +91,44 @@ class SlotVLTBackend(object):
         }
         self.pool[1010] = self.pool[1000]
 
-    def play(self, amount, game):
-        amount = Decimal(amount)
-        pprint("Credits Before: {}".format(self.credits))
-        self.credits -= amount
-        pprint("Credits After: {}".format(self.credits))
-        self.fetch_prize(amount, game)
-        prize = self.cache
-        self.credits += prize
-        pprint("Prize: {}".format(self.cache))
-        pprint("Credits After Prize: {}".format(self.credits))
-        return prize
+    def _get_pin(self, token):
+        try:
+            return SessionToken.objects.select_related(
+                'pin'
+                ).get(
+                    pk=token
+                ).pin
+        except SessionToken.DoesNotExist:
+            return False
+
+    def play(self, amount, game, token):
+        with atomic():
+            pin = self._get_pin(token)
+            if not pin:
+                return False
+            amount = int(Decimal(amount) * 100)
+            if amount > pin.credits:
+                return False
+            pin.credits -= amount
+            prize = self.fetch_prize(amount, game)
+            if prize is False:
+                raise Exception("No prize available!")
+            pin.credits += prize * 100
+            pin.save()
+            return prize
 
     def fetch_prize(self, amount, game):
         if int(game) in [1000, 1010]:
-            self.cache = amount * Decimal("{0:.2f}".format(
+            return (Decimal(amount) / Decimal(100.0)) * Decimal("{0:.2f}".format(
                 random.choice(self.pool[game])
             ))
-            pprint("Fetched Prize: {}".format(self.cache))
+        return False
 
-    def pre_reveal(self, amount, game):
-        if not self.cache:
-            self.fetch_prize(amount, game)
-        return self.cache
+    def pre_reveal(self, amount, game, token):
+        return Decimal(0.0)
 
-    def get_credits(self):
-        return self.credits
+    def get_credits(self, token):
+        pin = self._get_pin(token)
+        if pin:
+            return Decimal(pin.credits / 100)
+        return False

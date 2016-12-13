@@ -47,6 +47,7 @@ class SlotRuntime(object):
         lines = game_settings.get("lines", False)
         symbols = game_settings.get("symbols", False)
         paytable = game_settings.get("paytable", False)
+        max_lines = game_settings.get("maxBaseLines", False)
         if not (code and name and lines and symbols and paytable):
             raise Exception("Game Error: Required fields are {}".format(
                 "code, name, lines and paytable."
@@ -54,7 +55,7 @@ class SlotRuntime(object):
 
         ptable = SlotPayTable()
         ptable.from_dict(paytable)
-        decomposer = SlotPrizeDecomposer(ptable)
+        decomposer = SlotPrizeDecomposer(ptable, max_lines)
         self.games[code] = {
             "name": name,
             "lines": lines,
@@ -64,7 +65,7 @@ class SlotRuntime(object):
             "code": code,
         }
 
-    def handle(self, code, bet):
+    def handle(self, code, bet, token):
         code = int(code)
         if code not in self.games.keys():
             return False
@@ -72,9 +73,11 @@ class SlotRuntime(object):
         decomposer = game["decomposer"]
         paylines = game["lines"]
         symbols = game["symbols"]
-        credits = self.backend.get_credits()
-        multiplier = self.backend.play(bet, game.get("code"))
-        credits_after = self.backend.get_credits()
+        credits = self.backend.get_credits(token)
+        if not credits:
+            return False
+        multiplier = self.backend.play(bet, game.get("code"), token)
+        credits_after = self.backend.get_credits(token)
 
         # try to decompose the prize
         decomposed = decomposer.handle(bet, multiplier, paylines)
@@ -89,11 +92,15 @@ class SlotRuntime(object):
         self.last_result = out
         return out
 
-    def pre_review(self, code, bet):
+    def pre_review(self, code, bet, token):
         out = {}
         if code not in self.games.keys():
             out["error"] = "Invalid game."
         else:
             game = self.games[code]
-            out["prize"] = self.backend.pre_reveal(bet, game.get("code"))
+            out["prize"] = self.backend.pre_reveal(
+                bet,
+                game.get("code"),
+                token
+            )
         return out
