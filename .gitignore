@@ -15,7 +15,6 @@ celerybeat*
 Vagrantfile
 venv*
 static/
-public/
 docs/
 tmp/
 *.sublime*
