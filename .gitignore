@@ -20,6 +20,5 @@ tmp/
 *.sublime*
 *.csv
 src/
-public
 frontend
 .python-version

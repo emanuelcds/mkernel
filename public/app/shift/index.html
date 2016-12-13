@@ -1,0 +1,55 @@
+<ion-view title="Shift">
+    <ion-header-bar align-title="center" class="bar-positive">
+        <h1 class="title">CASHIER SHIFT</h1>
+    </ion-header-bar>
+    <ion-content padding="true" class="has-header">
+        <div class="list card">
+            <div class="item item-avatar">
+                <img gravatar-src="user.email">
+                <h2>{{user.first_name}} {{user.last_name}}</h2>
+                <p>{{user.role}}</p>
+            </div>
+            <div class="item item-divider">
+                Session Information
+            </div>
+            <div class="item">
+                <div class="row">
+                    <span class="col col-25">Started</span>
+                    <span class="col col-75"
+                          style="text-align: right"
+                          am-time-ago="shift.startedAt">
+                    </span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="row">
+                    <span class="col col-25">Current Balance</span>
+                    <span class="col col-75"
+                          style="text-align: right">
+                          {{shift.currentBalance | currency}}
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="col col-25">Cash In</span>
+                    <span class="col col-75"
+                          style="text-align: right">
+                          {{shift.cashedIn | currency}}
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="col col-25">Cash Out</span>
+                    <span class="col col-75"
+                          style="text-align: right">
+                          {{shift.cashedOut | currency}}
+                    </span>
+                </div>
+            </div>
+            <div class="item item-divider">
+                Actions
+            </div>
+            <div class="item">
+                <button class="button button-block button-positive" ng-click="logout()">Close Shift</button>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

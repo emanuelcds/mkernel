@@ -1,0 +1,50 @@
+<ion-view title="Pin">
+    <!-- header -->
+    <ion-header-bar align-title="center" class="bar-positive">
+        <h1 class="title">PINS</h1>
+        <button  class="button button-positive" ng-click="showNewPinModal()">
+                <i class="ion-plus-round"></i> New
+        </button>
+    </ion-header-bar>
+    <!-- content -->
+    <ion-content class="has-header">
+        <!-- No content alert -->
+        <div class="card"
+            ng-if="!(newPins && newPins.length > 0) && !(activePins && activePins.length > 0)">
+            <div class="item item-text-wrap">
+                <h2 style="text-align: center">NO AVAILABLE PIN NUMBERS</h2>
+            </div>
+        </div>
+        <!-- content list -->
+        <ul class="list" ng-if="(newPins && newPins.length > 0) || (activePins && activePins.length > 0)">
+            <!-- Not used PINs -->
+            <li class="item item-divider"
+            ng-if="newPins && newPins.length > 0">
+                Not Used
+            </li>
+            <li class="item item-button-right"
+                ng-repeat="pin in newPins">
+                <h2>{{pin.number | fixedDigit:6}}</h2>
+                <span>{{pin.credits / 100 | currency}}</span>
+                <button class="button button-positive"
+                        ng-click="cancel(pin.number)">
+                    <i class="icon ion-trash-a"></i>
+                </button>
+            </li>
+            <!-- active pins -->
+            <li class="item item-divider"
+            ng-if="activePins && activePins.length > 0">
+                Active
+            </li>
+            <li class="item item-button-right"
+                ng-repeat="pin in activePins">
+                {{pin.number | fixedDigit:6}}
+                <button class="button button-positive"
+                        ng-click="cashout(pin.number)">
+                    <i class="icon ion-log-out"></i>
+                </button>
+            </li>
+        </ul>
+        <!-- end of list -->
+    </ion-content>
+</ion-view>

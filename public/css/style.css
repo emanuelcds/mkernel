@@ -1,0 +1,9 @@
+/* Empty. Add your own CSS if you like */
+.marimba-container {
+    margin: 0 auto;
+    max-width: 720px;
+}
+
+.view-container {
+    max-width: 720px;
+}

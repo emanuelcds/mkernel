@@ -1,0 +1,18 @@
+<ion-view>
+<div class="bar bar-header bar-positive">
+    <h1 class="title">CASHIER SESSION</h1>
+</div>
+<ion-content padding="true" class="has-header">
+<div class="list">
+  <label class="item item-input item-stacked-label">
+    <span class="input-label">E-mail</span>
+    <input type="text" ng-model="page.user.email">
+  </label>
+  <label class="item item-input item-stacked-label">
+    <span class="input-label">Password</span>
+    <input type="password" ng-model="page.user.password">
+  </label>
+  <button class="button button-block button-positive" ng-click="page.login()">Sign In</button>
+</div>
+</ion-content>
+</ion-view>

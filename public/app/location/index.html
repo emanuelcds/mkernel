@@ -1,0 +1,21 @@
+<ion-view>
+<div class="bar bar-header bar-positive">
+    <h1 class="title">SELECT SITE</h1>
+</div>
+    <ion-content padding="true" class="has-header">
+    <div class="list">
+            <label class="item item-select">
+                <span class="input-label">Site</span>
+                <select ng-model="page.selectedLocation"
+                    ng-options="location.name for location in page.locations">
+                </select>
+            </label>
+            <button class="button button-block button-assertive" 
+                    ng-click="page.logout()">Cancel</button>
+
+            <button class="button button-block button-positive" 
+                    ng-click="page.confirmLocation()"
+                    ng-disabled="!page.selectedLocation">Start Shift</button>
+        </div>
+    </ion-content>
+</ion-view>
