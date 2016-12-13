@@ -61,6 +61,7 @@ class SlotRuntime(object):
             "paytable": ptable,
             "decomposer": decomposer,
             "symbols": symbols,
+            "code": code,
         }
 
     def handle(self, code, bet):
