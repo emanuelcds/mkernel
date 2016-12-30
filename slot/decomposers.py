@@ -1,8 +1,10 @@
-from slot.exceptions import InvalidBetException
 from decimal import Decimal
+
 from random import randint
 from random import choice
 from random import shuffle
+
+from slot.exceptions import InvalidBetException
 
 
 class SlotPrizeDecomposer(object):
@@ -40,7 +42,7 @@ class SlotPrizeDecomposer(object):
         bonus = False
 
         # triggers bonus in case of unforeseen outcome
-        if decomposed["exceeded"] > 1:
+        if decomposed["exceeded"] > 1 or multiplier >= Decimal(10.0):
             bonus = True
         # tries to trigger freespins if has many prizes
         elif prize_amount > max_paylines or force_freespin:
@@ -105,9 +107,9 @@ class SlotPrizeDecomposer(object):
         if not bonus:
             raise Exception("Cannot handle bonus prizes!")
         parts = []
-        total = 100
+        total = Decimal(100)
         while total > 0:
-            rnd = randint(0, min(25, total))
+            rnd = randint(min(5, total), min(25, total))
             total -= rnd
             parts.append(Decimal(rnd) / 100)
         prizes = []

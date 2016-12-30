@@ -1,10 +1,11 @@
 import requests
 from decimal import Decimal
 
-req = requests.get("http://localhost:5000/account/58d4f983f0934a9befcd0cf247df7845")
+req = requests.get("http://mkernel.herokuapp.com/account/98f8911a6c74914c4ce3b19948502560")
 rounds = 0
 win = 0
 hits = 0
+anticipations_amnt = 0
 freespin_rounds = 0
 bonus_rounds = 0
 
@@ -15,9 +16,9 @@ credits = req.json().get("credits")
 
 while credits > 0:
     # play
-    bet = Decimal(1.0)
+    bet = Decimal(0.25)
     r = requests.get(
-            "http://localhost:5000/slot/play/1010/{0:.2f}/58d4f983f0934a9befcd0cf247df7845".format(
+            "http://mkernel.herokuapp.com/slot/play/1010/{0:.2f}/98f8911a6c74914c4ce3b19948502560".format(
             bet
             )
         )
@@ -28,6 +29,7 @@ while credits > 0:
     credits = Decimal("{0:.2f}".format(outcome.get("credits_after")))
     bonus = outcome.get("bonus", [])
     freespins = outcome.get("freespins", [])
+    anticipations_amnt += len(outcome.get("antecipation", [])) > 0
     payout = Decimal("{0:.2f}".format(outcome.get("total_win")))
     win += payout
     if payout > 0:
@@ -53,6 +55,7 @@ while credits > 0:
         ))
     else:
         print("Rounds: {}".format(rounds))
+        print("Anticipations: {}".format(anticipations_amnt))
         print("RTP: {0:.2f}%".format(100 * Decimal(win)/(rounds * bet)))
         print("Hit: {0:.2f}%".format(100 * Decimal(hits)/rounds))
         print("Freespin Chance: {0:.2f}%".format(100 * Decimal(freespin_rounds)/rounds))

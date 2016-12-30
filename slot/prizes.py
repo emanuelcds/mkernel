@@ -1,4 +1,5 @@
 import random
+
 from decimal import Decimal
 from slot.exceptions import MaxWildException
 
@@ -157,6 +158,18 @@ class SlotPrize(object):
                 "paylines": lines,
             })
 
+    def fake_miss(self, reelport):
+        fake_symbol = random.choice(["S", "B"])
+        fake_reels = sorted(random.sample(range(len(reelport) - 1), 2))
+        for reel_pos in fake_reels:
+            freepos = [i for (i, p) in enumerate(reelport[reel_pos]) if not p]
+            try:
+                pos = random.choice(freepos)
+            except:
+                pos = 0
+            reelport[reel_pos][pos] = fake_symbol
+        return list(range(fake_reels[-1] + 1, 5))
+
     def fill(self, reelport, symbols):
         for i, reel in enumerate(reelport):
             previous_reel = []
@@ -172,6 +185,12 @@ class SlotPrize(object):
         """
         Serializes the given prize into a dictionary.
         """
+        # fakes a near miss if its not a freespin or bonus (10% chance)
+        should_fake_miss = not (len(self.freespins) and len(self.bonus))
+        should_fake_miss = should_fake_miss and random.randint(0, 100) <= 25
+        antecipation_reels = self.antecipation
+        if should_fake_miss:
+            antecipation_reels = self.fake_miss(self.reelstops)
         # fill in holes in reel with random symbols
         self.fill(self.reelstops, self.symbols)
         # return serialized prize
@@ -181,5 +200,5 @@ class SlotPrize(object):
             "paylines": self.lines,
             "freespins": self.freespins,
             "bonus": self.bonus,
-            "antecipation": self.antecipation if self.antecipation else []
+            "antecipation": antecipation_reels
         }
