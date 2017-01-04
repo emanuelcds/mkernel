@@ -8,7 +8,7 @@ from account.models import Location
 class MyUserAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         self.exclude = []
-        if not request.user.username != 'emanuel':
+        if not request.user.username == 'emanuel':
             self.exclude.append('user_permissions')
             self.exclude.append('groups')
             self.exclude.append('is_superuser')
