@@ -75,7 +75,7 @@ class POSAuthResource(BaseResource):
         # check if its credentials are correct
         username = user.username
         user = authenticate(username=username, password=data['password'])
-        if user and user.is_active and user.has_perm('clerk'):
+        if user and user.is_active and user.is_staff:
             # check if its already logged in, and delete previous session
             try:
                 token = SessionToken.objects.get(user=user)
